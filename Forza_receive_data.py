@@ -1,14 +1,8 @@
 import socket
 import struct
+from ForzaCar import convert_bytes_to_type, ForzaCarStats, gauge_bar
 
-def convert_bytes_to_type(fmt, index, message):
-    '''Converts 4 byte increments to the correct data type
-    Forza sends data as little endian'''
-    
-    if fmt == "f32":
-        return struct.unpack('<f',message[index:index+4])
-    else: #other types used is u32,s32,u8,s8
-        return int.from_bytes(message[index:index+4],"little")
+
     
 
 localIP     = "192.168.8.220"
@@ -25,6 +19,11 @@ print("UDP server up and listening")
 
 # Listen for incoming datagrams
 
+# oredered list of forza packet structure
+packet_struct = ["s32","u32","f32","f32","f32"]
+packet_item_variables = ["IsRaceOn","TimestampMS","EngineMaxRpm","EngineIdleRpm","CurrentEngineRpm","AccCarX","AccCarY","AccCarZ"]
+
+
 
 while(True):
 
@@ -32,10 +31,18 @@ while(True):
     message = bytesAddressPair[0]
     address = bytesAddressPair[1]
 
-    # message1 = int.from_bytes(message[0:4],"little")
-    # message2 = struct.unpack('<f',message[4:8])
+    # loop through item list and append values to ordered list
+    # count = 0
+    # item_list = []
+    # for item in packet_struct:
+    #     item_list.append(convert_bytes_to_type(item,count*4,message))
+    #     count += 1
 
-    print(convert_bytes_to_type("u32",0,message))
+    # create new ForzaCarStats items and initalizq data
+    carNow = ForzaCarStats(message)
+
+    # print out engine RPM and terminal gauge bar
+    print(f'Engine RPM: {carNow.CurrentEngineRpm[0]:8.2f} [{gauge_bar(carNow.CurrentEngineRpm[0],10000)}]\r', end="")
 
 
    
