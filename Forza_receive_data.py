@@ -2,31 +2,25 @@ import socket
 import struct
 from ForzaCar import convert_bytes_to_type, ForzaCarStats, gauge_bar
 
+#Configure Forza horizon to the same configurations as here
 
-    
-
-localIP     = "192.168.8.220"
+localIP     = "192.168.8.220" #replace your network interface IP here 
 localPort   = 10443
-bufferSize  = 1024
+bufferSize  = 1024 #may be able to make this smaller according to wireshark
 
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
- 
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
 print("UDP server up and listening")
-
-# Listen for incoming datagrams
 
 # oredered list of forza packet structure
 packet_struct = ["s32","u32","f32","f32","f32"]
 packet_item_variables = ["IsRaceOn","TimestampMS","EngineMaxRpm","EngineIdleRpm","CurrentEngineRpm","AccCarX","AccCarY","AccCarZ"]
 
-
-
+# Listen for incoming datagrams
 while(True):
-
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
     message = bytesAddressPair[0]
     address = bytesAddressPair[1]
